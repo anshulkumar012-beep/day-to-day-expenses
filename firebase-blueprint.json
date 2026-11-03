@@ -1,0 +1,242 @@
+{
+  "entities": {
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Customer and administrator user profiles and account authorization status",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase UID" },
+        "email": { "type": "string", "description": "Google account email" },
+        "displayName": { "type": "string", "description": "Display name" },
+        "photoURL": { "type": "string", "description": "Avatar URL" },
+        "status": { "type": "string", "enum": ["active", "suspended"] },
+        "role": { "type": "string", "enum": ["customer", "admin"] },
+        "createdAt": { "type": "string" },
+        "lastLoginAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "status", "role"]
+    },
+    "UserSettings": {
+      "title": "UserSettings",
+      "description": "User profile, app settings, and preferences",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase UID of user" },
+        "email": { "type": "string", "description": "User email address" },
+        "displayName": { "type": "string", "description": "User display name" },
+        "photoURL": { "type": "string", "description": "Avatar URL" },
+        "language": { "type": "string", "enum": ["en", "hi"] },
+        "currency": { "type": "string", "enum": ["NPR", "INR", "USD", "EUR", "GBP"] },
+        "theme": { "type": "string" },
+        "dateFormat": { "type": "string" },
+        "defaultProfileId": { "type": "string" },
+        "financialYearStartMonth": { "type": "number" },
+        "isAppLocked": { "type": "boolean" },
+        "securityPin": { "type": "string" },
+        "biometricEnabled": { "type": "boolean" },
+        "autoLockMinutes": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Income, expense, and internal transfer transaction records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["income", "expense", "transfer"] },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "profileId": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "subCategory": { "type": "string" },
+        "accountId": { "type": "string" },
+        "toAccountId": { "type": "string" },
+        "description": { "type": "string" },
+        "notes": { "type": "string" },
+        "referenceNo": { "type": "string" },
+        "receiptImage": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "type", "amount", "currency", "date", "profileId", "accountId"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Customer-specific custom category definition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "nameHi": { "type": "string" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "isArchived": { "type": "boolean" },
+        "isSystem": { "type": "boolean" }
+      },
+      "required": ["id", "userId", "name", "type", "icon", "color"]
+    },
+    "GlobalCategory": {
+      "title": "GlobalCategory",
+      "description": "Global category shared across all customers, managed by Super Admin",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "nameHi": { "type": "string" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "isArchived": { "type": "boolean" },
+        "order": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "name", "type", "icon", "color", "isArchived"]
+    },
+    "Account": {
+      "title": "Account",
+      "description": "Payment account such as Cash, Bank, Card or Digital Wallet",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "nameHi": { "type": "string" },
+        "type": { "type": "string" },
+        "initialBalance": { "type": "number" },
+        "color": { "type": "string" },
+        "icon": { "type": "string" },
+        "accountNumberMasked": { "type": "string" }
+      },
+      "required": ["id", "userId", "name", "type", "initialBalance", "color", "icon"]
+    },
+    "Profile": {
+      "title": "Profile",
+      "description": "Home or Office profile ledger",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "nameHi": { "type": "string" },
+        "icon": { "type": "string" },
+        "color": { "type": "string" },
+        "isArchived": { "type": "boolean" },
+        "isDefault": { "type": "boolean" }
+      },
+      "required": ["id", "userId", "name", "icon", "color"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Global application configuration, feature flags, and maintenance mode",
+      "type": "object",
+      "properties": {
+        "appName": { "type": "string" },
+        "appLogo": { "type": "string" },
+        "maintenanceMode": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "message": { "type": "string" },
+            "startedAt": { "type": "string" }
+          }
+        },
+        "features": {
+          "type": "object",
+          "properties": {
+            "voiceInput": { "type": "boolean" },
+            "standaloneDownload": { "type": "boolean" },
+            "pinLock": { "type": "boolean" },
+            "pdfExport": { "type": "boolean" },
+            "excelExport": { "type": "boolean" },
+            "customCategories": { "type": "boolean" }
+          }
+        },
+        "supportedCurrencies": { "type": "array" },
+        "supportedLanguages": { "type": "array" },
+        "updatedAt": { "type": "string" },
+        "updatedBy": { "type": "string" }
+      },
+      "required": ["appName"]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Broadcast notifications and updates published by Super Admin for customers",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "warning", "update", "critical"] },
+        "isActive": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "expiresAt": { "type": "string" }
+      },
+      "required": ["id", "title", "message", "type", "isActive"]
+    },
+    "AdminLog": {
+      "title": "AdminLog",
+      "description": "Audit trail of administrative actions performed in the platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "adminUid": { "type": "string" },
+        "adminEmail": { "type": "string" },
+        "action": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "adminUid", "adminEmail", "action", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserAccount",
+      "description": "User profile, account status (active/suspended), role and settings"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "User-specific financial transactions"
+    },
+    "/users/{userId}/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "User-specific custom categories"
+    },
+    "/users/{userId}/accounts/{accountId}": {
+      "schema": "Account",
+      "description": "User-specific payment accounts"
+    },
+    "/users/{userId}/profiles/{profileId}": {
+      "schema": "Profile",
+      "description": "User-specific profiles (Home, Office, etc.)"
+    },
+    "/global_categories/{categoryId}": {
+      "schema": "GlobalCategory",
+      "description": "Platform-wide global categories, managed by Super Admin"
+    },
+    "/app_config/global": {
+      "schema": "AppConfig",
+      "description": "Global application configuration and maintenance mode"
+    },
+    "/announcements/{announcementId}": {
+      "schema": "Announcement",
+      "description": "Broadcast announcements for all customer applications"
+    },
+    "/admin_logs/{logId}": {
+      "schema": "AdminLog",
+      "description": "Immutable administrative audit log records"
+    },
+    "/admins/{adminId}": {
+      "schema": "UserAccount",
+      "description": "Trusted Super Admin registry for role validation"
+    }
+  }
+}

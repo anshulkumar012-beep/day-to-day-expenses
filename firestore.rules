@@ -1,0 +1,116 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. GLOBAL DEFAULT-DENY SAFETY NET
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. AUTHENTICATION & ROLE HELPERS
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Super Admin: Verified by custom claim, trusted admin doc lookup, or root admin email verification
+    function isSuperAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.admin == true ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid)) ||
+        (request.auth.token.email == 'anshul.kumar012@gmail.com' && request.auth.token.email_verified == true)
+      );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Customer suspension verification: Suspended accounts are barred from performing mutations
+    function isCustomerActive(userId) {
+      return isOwner(userId) && (
+        !exists(/databases/$(database)/documents/users/$(userId)) ||
+        get(/databases/$(database)/documents/users/$(userId)).data.status != 'suspended'
+      );
+    }
+
+    // 3. ADMIN REGISTRY
+    match /admins/{adminId} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && (
+        (request.auth.token.email == 'anshul.kumar012@gmail.com' && request.auth.token.email_verified == true) ||
+        isSuperAdmin()
+      );
+    }
+
+    // 4. USER PROFILES & PRIVATE CUSTOMER DATA
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isSuperAdmin();
+
+      // Customers can create their profile but cannot self-assign admin roles or suspend states
+      allow create: if isOwner(userId) && (
+        (!('role' in request.resource.data) || request.resource.data.role == 'customer' || isSuperAdmin()) &&
+        (!('status' in request.resource.data) || request.resource.data.status == 'active' || isSuperAdmin())
+      );
+
+      // Updates: Super Admin can update anything (including status/role); Customer can update only their non-RBAC fields while active
+      allow update: if isSuperAdmin() || (
+        isOwner(userId) &&
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status', 'role']) &&
+        isCustomerActive(userId)
+      );
+
+      allow delete: if isSuperAdmin();
+
+      // Customer Transactions
+      match /transactions/{transactionId} {
+        allow read: if isOwner(userId) || isSuperAdmin();
+        allow write: if isSuperAdmin() || isCustomerActive(userId);
+      }
+
+      // Customer Accounts
+      match /accounts/{accountId} {
+        allow read: if isOwner(userId) || isSuperAdmin();
+        allow write: if isSuperAdmin() || isCustomerActive(userId);
+      }
+
+      // Customer Profiles (Home, Office)
+      match /profiles/{profileId} {
+        allow read: if isOwner(userId) || isSuperAdmin();
+        allow write: if isSuperAdmin() || isCustomerActive(userId);
+      }
+
+      // Customer Custom Categories
+      match /categories/{categoryId} {
+        allow read: if isOwner(userId) || isSuperAdmin();
+        allow write: if isSuperAdmin() || isCustomerActive(userId);
+      }
+    }
+
+    // 5. GLOBAL PLATFORM CATEGORIES
+    // All customers receive global categories; only Super Admin can create, modify, or archive them
+    match /global_categories/{categoryId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // 6. GLOBAL APPLICATION CONFIGURATION & MAINTENANCE MODE
+    match /app_config/{configId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // 7. PLATFORM ANNOUNCEMENTS & NOTIFICATIONS
+    match /announcements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow write: if isSuperAdmin();
+    }
+
+    // 8. ADMINISTRATIVE AUDIT ACTIVITY LOGS
+    // Strictly immutable: Can only be created by Super Admin; updates and deletions are forbidden
+    match /admin_logs/{logId} {
+      allow read: if isSuperAdmin();
+      allow create: if isSuperAdmin();
+      allow update, delete: if false;
+    }
+  }
+}

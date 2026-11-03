@@ -1,0 +1,6 @@
+{
+  "name": "Day to Day Expenses",
+  "description": "Simple, fast, secure personal finance, income and expense tracker with Home and Office profiles, NPR/INR currency, and reports.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

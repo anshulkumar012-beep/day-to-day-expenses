@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">डे-टू-डे एक्सपेंसेस</string>
+    <string name="nav_dashboard">डैशबोर्ड</string>
+    <string name="nav_transactions">लेन-देन</string>
+    <string name="nav_reports">रिपोर्ट्स</string>
+    <string name="nav_accounts">खाते</string>
+    <string name="nav_categories">श्रेणियां</string>
+    <string name="nav_settings">सेटिंग्स</string>
+
+    <string name="profile_home">घर (Home)</string>
+    <string name="profile_office">कार्यालय / व्यापार</string>
+    <string name="profile_all">सभी प्रोफाइल</string>
+
+    <string name="today_income">आज की आय</string>
+    <string name="today_expenses">आज का खर्च</string>
+    <string name="today_net">आज का शुद्ध शेष</string>
+    <string name="month_income">इस माह कुल आय</string>
+    <string name="month_expenses">इस माह कुल खर्च</string>
+    <string name="month_savings">इस माह शुद्ध बचत</string>
+
+    <string name="add_transaction">लेन-देन दर्ज करें</string>
+    <string name="expense">खर्च</string>
+    <string name="income">आय</string>
+    <string name="transfer">ट्रांसफर</string>
+    <string name="amount">राशि</string>
+    <string name="description">विवरण</string>
+    <string name="category">श्रेणी</string>
+    <string name="account">खाता</string>
+</resources>
